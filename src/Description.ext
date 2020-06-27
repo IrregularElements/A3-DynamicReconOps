@@ -1,0 +1,205 @@
+#include "sunday_system\dialogs\defines.hpp"
+#include "sunday_system\dialogs\dialogs.hpp"
+#include "sunday_system\dialogs\dialogsMainMenu.hpp"
+#include "sunday_system\dialogs\dialogsLobby.hpp"
+
+enableDebugConsole = 1;
+allowFunctionsLog = 1;
+
+corpseManagerMode = 1;
+corpseLimit = 1;
+corpseRemovalMinTime = 900;
+corpseRemovalMaxTime = 3600;
+
+respawn = 3;
+respawnButton = 1;
+respawnDelay = 45;
+respawnVehicleDelay = 30;
+respawnDialog = 0;
+respawnOnStart = 0;
+respawnTemplates[] = {"MenuPosition", "Tickets", "Spectator", "EndMission"};
+
+class Params
+{
+	class Respawn
+	{
+		title = "Respawn";
+		values[] = {0,1,2,3};
+		texts[] = {"20 Seconds", "45 Seconds", "90 Seconds", "Disabled"};
+		default = 1;
+	};		
+	class RespawnPositions
+	{
+		title = "Respawn Positions";
+		values[] = {0,1,2};
+		texts[] = {"Both", "Starting location only", "Team only"};
+		default = 0;               
+	};
+};
+
+class RscTitles {
+	class DRO_Splash {
+		idd = -1;
+		duration = 60;
+		movingenable = 0;	
+		class Controls {	
+			class facade1: sundayText
+			{
+				idc = 1000;
+				text = "";
+				x = 0 * safezoneW + safezoneX;
+				y = 0 * safezoneH + safezoneY;
+				w = 0.15 * safezoneW;
+				h = 1 * safezoneH;
+				colorBackground[] = { 0, 0, 0, 1 };			
+				fade = 0;
+			};
+			class facade2: sundayText
+			{
+				idc = 1001;
+				text = "";
+				x = 0.85 * safezoneW + safezoneX;
+				y = 0 * safezoneH + safezoneY;
+				w = 0.15 * safezoneW;
+				h = 1 * safezoneH;
+				colorBackground[] = { 0, 0, 0, 1 };			
+				fade = 0;
+			};	
+			class splash: RscPicture
+			{			
+				idc = 1002;
+				text = "images\DRO_splash_square.paa";
+				x = 0.15 * safezoneW + safezoneX;
+				y = 0.0 * safezoneH + safezoneY;
+				w = 0.7 * safezoneW;
+				h = 1 * safezoneH;
+				fade = 0;
+			};		
+		};		
+	};
+};
+
+class CfgCommunicationMenu
+{   
+	class heliExtract
+    {
+        text = "Request extraction"; // Text displayed in the menu and in a notification
+        submenu = ""; // Submenu opened upon activation (expression is ignored when submenu is not empty.)
+        expression = "[_pos] execVM 'sunday_system\heliExtract.sqf'"; // Code executed upon activation
+        icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\transport_ca.paa"; // Icon displayed permanently next to the command menu
+        cursor = "\a3\Ui_f\data\IGUI\Cfg\Cursors\iconCursorSupport_ca.paa"; // Custom cursor displayed when the item is selected
+        enable = "1"; // Simple expression condition for enabling the item
+        removeAfterExpressionCall = 1; // 1 to remove the item after calling
+    };
+	class extractLeave
+    {
+        text = "Extract"; // Text displayed in the menu and in a notification
+        submenu = ""; // Submenu opened upon activation (expression is ignored when submenu is not empty.)
+        expression = "extractLeave = true; publicVariable 'extractLeave'"; // Code executed upon activation
+        icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\transport_ca.paa"; // Icon displayed permanently next to the command menu
+        cursor = ""; // Custom cursor displayed when the item is selected
+        enable = "1"; // Simple expression condition for enabling the item
+        removeAfterExpressionCall = 1; // 1 to remove the item after calling
+    };	
+	class DRO_Support_Request_Artillery
+	{
+		cursor = "\A3\ui_f\data\igui\cfg\cursors\iconCursorSupport_ca.paa";
+		enable = "cursorOnGround";
+		expression = "[_pos] execVM 'sunday_system\supports\supportArtyComms.sqf'";
+		icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\artillery_ca.paa";
+		text = "Artillery strike";		
+	};
+	class DRO_Support_Request_CAS_Bombing
+	{
+		cursor = "\A3\ui_f\data\igui\cfg\cursors\iconCursorSupport_ca.paa";
+		enable = "cursorOnGround";
+		expression = "[_pos] execVM 'sunday_system\supports\supportCASHeli.sqf'";
+		icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\cas_ca.paa";
+		text = "CAS (bombing run)";	
+	};
+	class DRO_Support_Request_CAS_Heli
+	{
+		cursor = "\A3\ui_f\data\igui\cfg\cursors\iconCursorSupport_ca.paa";
+		enable = "cursorOnGround";
+		expression = "[_pos] execVM 'sunday_system\supports\supportCASHeli.sqf'";
+		icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\casheli_ca.paa";
+		text = "CAS (helicopter attack)";
+		removeAfterExpressionCall = 1;
+	};
+	class DRO_Support_Request_Drop
+	{
+		cursor = "\A3\ui_f\data\igui\cfg\cursors\iconCursorSupport_ca.paa";
+		enable = "cursorOnGround";
+		expression = "[_pos] execVM 'sunday_system\supports\heliDrop.sqf'";
+		icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\supplydrop_ca.paa";
+		text = "Supply drop";
+		removeAfterExpressionCall = 1;
+	};
+	class DRO_Support_Request_Transport
+	{
+		cursor = "\A3\ui_f\data\igui\cfg\cursors\iconCursorSupport_ca.paa";
+		enable = "cursorOnGround";
+		expression = "player setVariable ['BIS_SUPP_request', ['Transport', _pos]]";
+		icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\transport_ca.paa";
+		text = "Helicopter transport";
+	};
+	class DRO_Friendly_Engage
+	{
+		cursor = "";
+		enable = "1";
+		expression = "DRO_beginFriendlyAssault = true; publicVariable 'DRO_beginFriendlyAssault'";
+		icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\attack_ca.paa";
+		text = "Begin Assault";
+		removeAfterExpressionCall = 1;
+	};
+};
+
+class CfgDebriefing
+{  
+	class DROEnd_Full
+	{
+		title = "Mission Completed";
+		subtitle = "";
+		description = "With all objectives completed the mission was a success and a stepping stone to further control of the region.";
+		pictureBackground = "images\recon_image_notext.jpg";
+		picture = "";
+		pictureColor[] = {0.0,0.3,0.6,1};
+	};
+	class DROEnd_Partial
+	{
+		title = "Mission Completed";
+		subtitle = "";
+		description = "The mission did not go to plan and further operations had to be rethought to accommodate an appropriate response.";
+		pictureBackground = "images\recon_image_notext.jpg";
+		picture = "";
+		pictureColor[] = {0.0,0.3,0.6,1};
+	};
+	class DROEnd_Fail
+	{
+		title = "Mission Failed";
+		subtitle = "";
+		description = "With none of the objectives completed the mission was considered a failure and your team was reassigned. Unchecked, the enemy expanded their influence on the region.";
+		pictureBackground = "images\recon_image_notext.jpg";
+		picture = "";
+		pictureColor[] = {0.5,0.4,0.4,1};
+	};
+	class DROEnd_FailCiv1
+	{
+		title = "Mission Failed";
+		subtitle = "Unacceptable Civilian Casualties";
+		description = "Following the end of your mission and debriefing difficult questions were asked about the role your unit played. Though ultimately everyone related to the operation escaped punishment the civilian deaths made progress in the region harder and the conflict would continue.";
+		pictureBackground = "images\recon_image_notext.jpg";
+		picture = "";
+		pictureColor[] = {0.5,0.4,0.4,1};
+	};
+	class DROEnd_FailCiv2
+	{
+		title = "Mission Failed";
+		subtitle = "Unacceptable Civilian Casualties";		
+		description = "The actions of your team on this day were widely condemned by the media and authorities. With the civilian deaths the enemy gained a powerful propaganda tool and the ranks of their army grew. Progress towards a peaceful solution became harder and the conflict was prolonged further than anyone expected. The families who lost loved ones would spend years struggling to be acknowledged.";
+		pictureBackground = "images\recon_image_notext.jpg";
+		picture = "";
+		pictureColor[] = {0.5,0.4,0.4,1};
+	};
+};
+

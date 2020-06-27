@@ -1,0 +1,26 @@
+Index: A3-DynamicReconOps/src/sunday_system/fnc_lib/menuFunctions.sqf
+===================================================================
+--- A3-DynamicReconOps.orig/src/sunday_system/fnc_lib/menuFunctions.sqf	2020-06-27 18:23:14.031576906 +0000
++++ A3-DynamicReconOps/src/sunday_system/fnc_lib/menuFunctions.sqf	2020-06-27 18:24:14.193306594 +0000
+@@ -102,7 +102,7 @@
+ 				case 4010: {
+ 					_return pushBack "numObjectives";
+ 					_return pushBack numObjectives;			
+-					_return pushBack ["RANDOM", "1", "2", "3"];					
++					_return pushBack ["RANDOM", "1", "2", "3", "4", "5", "6"];					
+ 				};
+ 			};			
+ 		};
+Index: A3-DynamicReconOps/src/start.sqf
+===================================================================
+--- A3-DynamicReconOps.orig/src/start.sqf	2020-06-27 18:23:13.983577122 +0000
++++ A3-DynamicReconOps/src/start.sqf	2020-06-27 18:24:38.067199257 +0000
+@@ -799,7 +799,7 @@
+ // Get number of tasks
+ _numObjs = 1;
+ if (numObjectives == 0) then {
+-	_numObjs = [1,3] call BIS_fnc_randomInt;
++	_numObjs = [1,6] call BIS_fnc_randomInt;
+ } else {
+ 	_numObjs = numObjectives;
+ };
