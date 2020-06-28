@@ -4,9 +4,8 @@ set -ex
 shopt -s nullglob globstar
 
 # Executable dependencies
-JQ="${JQ-jq}"
 RSYNC="${RSYNC-rsync}"
-#GNUFIND="${GNUFIND-find}"
+GNUFIND="${GNUFIND-find}"
 #GNUCP="${GNUCP-cp}"
 ARMAKE2="${ARMAKE2-armake2}"
 PYTHON3="${PYTHON3-python3}"
@@ -14,17 +13,6 @@ RUBY="${RUBY-ruby}"
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 cd "$DIR"
-
-QUILT_TOP="$(quilt top || echo)"
-SRCDIR="$(readlink -f ./src)"
-quilt push -aq
-find "$DIR"/src -type f -print0 | xargs -0 unix2dos
-cleanup() {
-  find "$DIR"/src -type f -print0 | xargs -0 dos2unix
-  # shellcheck disable=SC2086
-  quilt pop -aqf $QUILT_TOP
-}
-trap cleanup EXIT
 
 # urlencoded-like character replacement for Arma pbos.
 # Converts
@@ -44,21 +32,30 @@ urlencode_pbo() (
 )
 
 cd pbo
+rm -rf *
 
-jq -r '.[] | "\(.id)\t\(.name//"")\t\(.pboname//"")"' <"$DIR"/maps.json \
-| while IFS=$'\t' read -r ID NAME PBONAME ;
-do
-  [[ -z $NAME ]] && NAME="$ID"
-  [[ -z $PBONAME ]] && PBONAME="$NAME"
-  PBODIR="Dynamic Recon Ops - $PBONAME.$ID"
+ls -1 "$DIR"/maps | while IFS= read -r ID ; do
+  NAMEFILE="$DIR/maps/$ID/mapname.txt"
+  [[ -e $NAMEFILE ]] && NAME="$(cat "$NAMEFILE")" || NAME="${ID}"
+  PBODIR="Dynamic Recon Ops - $NAME.$ID"
   PBOFILE="$PBODIR.pbo"
+  rm -rf "$PBODIR"
   mkdir "$PBODIR"
   cleanup() {
     rm -rf "$PBODIR"
   }
   trap cleanup EXIT
-  "$RSYNC" -aq -- "$DIR"/src/ "$PBODIR"
-  "$RSYNC" -aq -- "$DIR"/maps/"$ID"/ "$PBODIR"
+
+  pushd "$PBODIR"
+  "$RSYNC" -aq -- "$DIR"/src/ .
+  while IFS= read -r PATCH ; do
+    echo "$PATCH"
+    patch --quiet -p2 <"${DIR}/patches/${PATCH}"
+  done <"${DIR}/patches/series"
+  "$RSYNC" -aq --exclude=mapname.txt -- "${DIR}/maps/${ID}/" .
+  "$GNUFIND" . -type f -print0 | xargs -0 unix2dos
+  popd
+
   "$ARMAKE2" pack -f "$PBODIR" "$PBOFILE"
   urlencode_pbo "$PBOFILE"
   rm -rf "$PBODIR"
