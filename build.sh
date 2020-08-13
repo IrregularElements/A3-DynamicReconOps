@@ -52,7 +52,16 @@ ls -1 "$DIR"/maps | while IFS= read -r ID ; do
     echo "$PATCH"
     patch --quiet -p2 <"${DIR}/patches/${PATCH}"
   done <"${DIR}/patches/series"
-  "$RSYNC" -aq --exclude=mapname.txt -- "${DIR}/maps/${ID}/" .
+
+  if [[ -e $DIR/maps/$ID/patches/series ]]; then
+    while IFS= read -r PATCH ; do
+      echo "$PATCH"
+      patch --quiet -p1 <"${DIR}/maps/$ID/patches/${PATCH}"
+    done <"${DIR}/maps/$ID/patches/series"
+  fi
+
+  RSYNC_EXCLUDE=(mapname.txt 'patches/*.patch' patches/series)
+  "$RSYNC" -aq "${RSYNC_EXCLUDE[@]/#/--exclude=}" -- "${DIR}/maps/${ID}/" .
   "$GNUFIND" . -type f -print0 | xargs -0 unix2dos
   popd
 
