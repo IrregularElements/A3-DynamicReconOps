@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#
+# Run with KEEP_PBODIRS=1 to keep pbo directories after packaging.
 
 set -ex
 shopt -s nullglob globstar
@@ -42,7 +44,7 @@ ls -1 "$DIR"/maps | while IFS= read -r ID ; do
   rm -rf "$PBODIR"
   mkdir "$PBODIR"
   cleanup() {
-    rm -rf "$PBODIR"
+    [[ -z $KEEP_PBODIRS ]] && rm -rf "$PBODIR"
   }
   trap cleanup EXIT
 
@@ -67,7 +69,7 @@ ls -1 "$DIR"/maps | while IFS= read -r ID ; do
 
   "$ARMAKE2" pack -f "$PBODIR" "$PBOFILE"
   urlencode_pbo "$PBOFILE"
-  rm -rf "$PBODIR"
+  [[ -z $KEEP_PBODIRS ]] && rm -rf "$PBODIR"
 done
 
 if git describe 1>/dev/null 2>/dev/null ; then
