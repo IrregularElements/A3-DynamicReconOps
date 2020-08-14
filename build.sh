@@ -69,3 +69,12 @@ ls -1 "$DIR"/maps | while IFS= read -r ID ; do
   urlencode_pbo "$PBOFILE"
   rm -rf "$PBODIR"
 done
+
+if git describe 1>/dev/null 2>/dev/null ; then
+  VERSION="$(git describe --tags --dirty)"
+else
+  VERSION=g"$(git describe --tags --dirty --always)"
+fi
+DATE="$(git log -1 --pretty='%cd' --date=format:'%Y.%m.%d')"
+
+zip -9 ../DynamicReconOps-"${DATE}"-"${VERSION}".zip *.pbo
