@@ -1,0 +1,22 @@
+---
+ src/sunday_system/fnc_lib/sundayFunctions.sqf |    9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+--- a/src/sunday_system/fnc_lib/sundayFunctions.sqf
++++ b/src/sunday_system/fnc_lib/sundayFunctions.sqf
+@@ -1292,6 +1292,15 @@
+ 	_unit setNameSound _lastName;
+ 	_unit setSpeaker _speaker;
+ 	_unit setFace _face;
++
++	// Fix ACE3 name
++	if ((configfile >> "CfgPatches" >> "ace_main") call BIS_fnc_getCfgIsClass) then {
++		[_unit] call ace_common_fnc_setName;
++	};
++
++	// Reset ShackTac name and UI
++	_unit setVariable ["sth_name", []];
++	["STUI_Reset", []] call CBA_fnc_localEvent;
+ };
+ 
+ sun_goat = {
