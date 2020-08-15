@@ -1,22 +1,57 @@
 ---
- src/sunday_system/fnc_lib/sundayFunctions.sqf |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ src/Description.ext                           |   10 ++++++++++
+ src/sunday_system/fnc_lib/sundayFunctions.sqf |   10 ++++++----
+ src/updateUnitName.sqf                        |   11 +++++++++++
+ 3 files changed, 27 insertions(+), 4 deletions(-)
 
 --- a/src/sunday_system/fnc_lib/sundayFunctions.sqf
 +++ b/src/sunday_system/fnc_lib/sundayFunctions.sqf
-@@ -1292,6 +1292,15 @@
- 	_unit setNameSound _lastName;
- 	_unit setSpeaker _speaker;
- 	_unit setFace _face;
+@@ -1288,10 +1288,11 @@
+ 
+ sun_setNameMP = {
+ 	params ["_unit", "_firstName", "_lastName", "_speaker", "_face"];	
+-	_unit setName [format ["%1 %2", _firstName, _lastName], _firstName, _lastName];
+-	_unit setNameSound _lastName;
+-	_unit setSpeaker _speaker;
+-	_unit setFace _face;
++	[_unit, _lastName] remoteExec ["setNameSound"];
++	[_unit, _speaker] remoteExec ["setSpeaker"];
++	[_unit, _face] remoteExec ["setFace"];
 +
-+	// Fix ACE3 name
-+	if ((configfile >> "CfgPatches" >> "ace_main") call BIS_fnc_getCfgIsClass) then {
-+		[_unit] call ace_common_fnc_setName;
-+	};
-+
-+	// Reset ShackTac name and UI
-+	_unit setVariable ["sth_name", []];
-+	["STUI_Reset", []] call CBA_fnc_localEvent;
++	[_unit, _firstName, _lastName] remoteExec ["DRO_fnc_updateUnitName"];
  };
  
  sun_goat = {
+--- a/src/Description.ext
++++ b/src/Description.ext
+@@ -203,3 +203,13 @@
+ 	};
+ };
+ 
++class CfgFunctions
++{
++	class DRO
++	{
++		class userFunctions
++		{
++			class updateUnitName {file = "updateUnitName.sqf";};
++		};
++	};
++};
+--- /dev/null
++++ b/src/updateUnitName.sqf
+@@ -0,0 +1,14 @@
++params ["_unit", "_firstName", "_lastName"];
++
++_unit setName [format ["%1 %2", _firstName, _lastName], _firstName, _lastName];
++sleep 2;
++
++if ((configfile >> "CfgPatches" >> "ace_main") call BIS_fnc_getCfgIsClass) then {
++	_unit call ace_common_fnc_setName;
++};
++
++// Reset ShackTac UI name
++_unit setVariable ["sth_name", []];
++// Reset ShackTac UI
++sleep 1;
++["STUI_Reset", []] remoteExec ["CBA_fnc_localEvent"];
