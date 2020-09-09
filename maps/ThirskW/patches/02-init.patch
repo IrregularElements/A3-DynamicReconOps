@@ -1,0 +1,23 @@
+--- a/initServer.sqf
++++ b/initServer.sqf
+@@ -19,6 +19,9 @@
+ missionNameSpace setVariable ["aoLocation", "", true];
+ missionNameSpace setVariable ["lobbyComplete", 0, true];
+ 
++[] execVM "initServerThirskW.sqf";
++
++
+ [] execVM "start.sqf";
+ 
+ 
+--- a/initPlayerLocal.sqf
++++ b/initPlayerLocal.sqf
+@@ -369,6 +369,8 @@
+ 	Thank you for playing!	
+ "]];
+ 
++_this execVM "initPlayerLocalThirskW.sqf";
++
+ // Start saving player loadout periodically
+ [] spawn {
+ 	loadoutSavingStarted = true;
