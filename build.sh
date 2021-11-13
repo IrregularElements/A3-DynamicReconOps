@@ -34,7 +34,7 @@ urlencode_pbo() (
 )
 
 cd pbo
-rm -rf *
+rm -rf -- ./*
 
 ls -1 "$DIR"/maps | while IFS= read -r ID ; do
   NAMEFILE="$DIR/maps/$ID/mapname.txt"
@@ -44,7 +44,7 @@ ls -1 "$DIR"/maps | while IFS= read -r ID ; do
   rm -rf "$PBODIR"
   mkdir "$PBODIR"
   cleanup() {
-    [[ -z $KEEP_PBODIRS ]] && rm -rf "$PBODIR"
+    [[ -z $KEEP_PBODIRS ]] && rm -rf -- "$PBODIR"
   }
   trap cleanup EXIT
 
@@ -79,4 +79,4 @@ else
 fi
 DATE="$(git log -1 --pretty='%cd' --date=format:'%Y.%m.%d')"
 
-zip -9 ../DynamicReconOps-"${DATE}"-"${VERSION}".zip *.pbo
+zip -9 ../DynamicReconOps-"${DATE}"-"${VERSION}".zip -- *.pbo
