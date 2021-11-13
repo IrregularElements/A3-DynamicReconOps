@@ -22,7 +22,7 @@ cd "$DIR"
 # to
 #  "Dynamic%20Recon%20Ops%20-%20G%2eO%2eS%20Al%20Rayak.pja310.pbo"
 urlencode_pbo() (
-  ue()(ruby -e 'puts ARGF.read.gsub(/[^\w-]/){|c|sprintf"%%%02x",c.ord}';)
+  ue()("${RUBY}" -e 'puts ARGF.read.gsub(/[^\w-]/){|c|sprintf"%%%02x",c.ord}';)
   set -ex
   PBONAME="$1" ; shift
   EXT="${PBONAME##*.}"
@@ -63,11 +63,11 @@ ls -1 "$DIR"/maps | while IFS= read -r ID ; do
   fi
 
   RSYNC_EXCLUDE=(mapname.txt 'patches/*.patch' patches/series)
-  "$RSYNC" -aq "${RSYNC_EXCLUDE[@]/#/--exclude=}" -- "${DIR}/maps/${ID}/" .
+  "${RSYNC}" -aq "${RSYNC_EXCLUDE[@]/#/--exclude=}" -- "${DIR}/maps/${ID}/" .
   "$GNUFIND" . -type f -print0 | xargs -0 unix2dos
   popd
 
-  "$ARMAKE2" pack -f "$PBODIR" "$PBOFILE"
+  "${ARMAKE2}" pack -f "$PBODIR" "$PBOFILE"
   urlencode_pbo "$PBOFILE"
   [[ -z $KEEP_PBODIRS ]] && rm -rf "$PBODIR"
 done
