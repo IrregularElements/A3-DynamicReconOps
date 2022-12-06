@@ -10,7 +10,7 @@ published version!
 
 Packing the scenario
 --------------------
-Run `build.sh`.  You need [jq][jq] and [armake2][armake2].
+Run `build.sh`.  You need [armake2][armake2].
 
 Notes
 -----
@@ -19,5 +19,4 @@ Notes
 
 [mbrdmn]: https://steamcommunity.com/profiles/76561197967479574
 [dro]: https://steamcommunity.com/sharedfiles/filedetails/?id=722652837
-[jq]: http://github.com/stedolan/jq
 [armake2]: https://github.com/KoffeinFlummi/armake2
