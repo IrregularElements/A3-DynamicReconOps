@@ -1,0 +1,17 @@
+--- A3-DynamicReconOps.orig/src/sunday_system/player_setup/resetAIAction.sqf
++++ A3-DynamicReconOps/src/sunday_system/player_setup/resetAIAction.sqf
+@@ -57,12 +57,12 @@ _unitNew setVariable ["respawnLoadout",
+ 
+ [_unitNew] call sun_addResetAction;
+ 
+-/*
++
+ _unitNew setUnitTrait ["Medic", true];
+ _unitNew setUnitTrait ["engineer", true];
+ _unitNew setUnitTrait ["explosiveSpecialist", true];
+ _unitNew setUnitTrait ["UAVHacker", true];
+-*/
++
+ if ((paramsArray select 0) == 1) then {
+ 	[_unitNew, ["respawn", {
+ 		_unitNew = (_this select 0);				
