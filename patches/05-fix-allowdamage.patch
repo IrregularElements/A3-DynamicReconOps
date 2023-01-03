@@ -1,0 +1,21 @@
+--- A3-DynamicReconOps.orig/src/initPlayerLocal.sqf
++++ A3-DynamicReconOps/src/initPlayerLocal.sqf
+@@ -4,6 +4,8 @@ _rscLayer cutRsc ["DRO_Splash", "PLAIN",
+ diag_log format ["DRO: Player %1 waiting for player init", player];
+ waitUntil {!isNull player};
+ 
++[{ (_this select 0) allowDamage true; }, [player], 60] call CBA_fnc_waitAndExecute;
++
+ #include "sunday_system\fnc_lib\sundayFunctions.sqf";
+ #include "sunday_system\fnc_lib\droFunctions.sqf";
+ #include "sunday_revive\reviveFunctions.sqf";
+--- A3-DynamicReconOps.orig/src/sunday_system/player_setup/paraBackpack.sqf
++++ A3-DynamicReconOps/src/sunday_system/player_setup/paraBackpack.sqf
+@@ -4,6 +4,7 @@ _backpack = backpack _unit;
+ diag_log format ["DRO: paraBackpack called for unit %1", _unit];
+ 
+ _unit allowDamage false; 
++[{ (_this select 0) allowDamage true; }, [_unit], 5] call CBA_fnc_waitAndExecute;
+ _unit switchMove "HaloFreeFall_non";
+ _unit disableAI "ANIM";
+ 

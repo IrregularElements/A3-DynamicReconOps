@@ -75,8 +75,9 @@ done
 if git describe 1>/dev/null 2>/dev/null ; then
   VERSION="$(git describe --tags --dirty)"
 else
-  VERSION=g"$(git describe --tags --dirty --always)"
+  VERSION="$(git describe --tags --dirty --always)"
 fi
-DATE="$(git log -1 --pretty='%cd' --date=format:'%Y.%m.%d')"
 
-zip -9 ../DynamicReconOps-"${DATE}"-"${VERSION}".zip -- *.pbo
+SRC_DATE="$(git log -1 --pretty='%cd' --date=format:'%Y-%m-%d' -- "$(git rev-parse --show-toplevel)"/src)"
+
+zip -9 ../DynamicReconOps-"${SRC_DATE}"-"${VERSION}".zip -- *.pbo

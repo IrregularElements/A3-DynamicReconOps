@@ -1,3 +1,4 @@
 01-objcount.patch
 03-unitname.patch
 04-reset-unit-traits.patch
+05-fix-allowdamage.patch
