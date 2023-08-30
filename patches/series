@@ -2,3 +2,4 @@
 03-unitname.patch
 04-reset-unit-traits.patch
 05-fix-allowdamage.patch
+06-cb-holdtask.patch

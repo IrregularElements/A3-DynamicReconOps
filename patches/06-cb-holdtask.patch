@@ -1,0 +1,16 @@
+Patch taken from 
+  https://steamcommunity.com/sharedfiles/filedetails/?id=2801203486
+by chazbotic, intended to fix the "Take and Hold" objective getting
+stuck after completion.
+
+--- a/src/sunday_system/createExtractTask.sqf
++++ b/src/sunday_system/createExtractTask.sqf
+@@ -256,7 +256,7 @@ switch (_extractStyle) do {
+ 			"		
+ 				((({alive _x && side _x == enemySide} count thisList) < round (({alive _x && side _x == playersSide} count thisList)*0.25))) || 
+ 				(({alive _x && side _x == enemySide} count thisList) <= 5) ||
+-				time > ((this getVariable 'startTime') + 240)
++				time > ((thisTrigger getVariable 'startTime') + 240)
+ 			",
+ 			"
+ 				[] execVM 'sunday_system\endMission.sqf';
