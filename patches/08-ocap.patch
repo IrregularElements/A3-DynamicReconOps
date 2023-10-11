@@ -1,0 +1,14 @@
+--- a/src/sunday_system/generate_ao/generateAO.sqf
++++ b/src/sunday_system/generate_ao/generateAO.sqf
+@@ -201,6 +201,11 @@ _markerAOC setMarkerBrush "Border";
+ _markerAOC setMarkerColor "ColorRed";
+ _markerAOC setMarkerAlpha 0;
+ 
++if(isNil "ocap_excludeMarkerFromRecord") then {
++	ocap_excludeMarkerFromRecord = [];
++};
++ocap_excludeMarkerFromRecord pushBack "mkrAOC";
++
+ // Visual markers
+ _markerFlag = createMarker ["mkrFlag", [(_centerTrue select 0),((_centerTrue select 1)+150)]];
+ _markerFlag setMarkerShape "ICON";
