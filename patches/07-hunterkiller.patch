@@ -1,0 +1,15 @@
+--- a/src/initPlayerLocal.sqf
++++ b/src/initPlayerLocal.sqf
+@@ -384,3 +384,12 @@ player createDiaryRecord ["dro", ["Dynam
+ 	};
+ };
+ 
++
++// Force enable ACE Hunter-Killer on all player-visited vehicles
++player addEventHandler ["GetInMan", {
++	params ["", "", "_vehicle", ""];
++	private _hk = _vehicle getVariable ["ace_hunterkiller", nil];
++	if(isNil "_hk") then {
++		_vehicle setVariable ["ace_hunterkiller", true, true];
++	};
++}];
