@@ -2,8 +2,8 @@ Dynamic Recon Ops
 =================
 This repository is a private fork of [mbrdmn][mbrdmn]'s [Dynamic Recon Ops][dro]
 scenario for Arma 3.  It contains the unpacked Altis PBO from Steam Workshop,
-plus all published versions for other maps, plus a simple toolkit to repack the
-scenario for arbitrary maps.
+plus ~~all~~ most published versions for other maps, plus a simple toolkit to
+repack the scenario for arbitrary maps.
 
 **NOTE**: This repository is not the upstream project and may lag behind the
 published version!
