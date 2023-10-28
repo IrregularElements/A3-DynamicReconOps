@@ -1,0 +1,175 @@
+--- a/src/Description.ext
++++ b/src/Description.ext
+@@ -183,24 +183,6 @@ class CfgDebriefing
+ 		picture = "";
+ 		pictureColor[] = {0.5,0.4,0.4,1};
+ 	};
+-	class DROEnd_FailCiv1
+-	{
+-		title = "Mission Failed";
+-		subtitle = "Unacceptable Civilian Casualties";
+-		description = "Following the end of your mission and debriefing difficult questions were asked about the role your unit played. Though ultimately everyone related to the operation escaped punishment the civilian deaths made progress in the region harder and the conflict would continue.";
+-		pictureBackground = "images\recon_image_notext.jpg";
+-		picture = "";
+-		pictureColor[] = {0.5,0.4,0.4,1};
+-	};
+-	class DROEnd_FailCiv2
+-	{
+-		title = "Mission Failed";
+-		subtitle = "Unacceptable Civilian Casualties";		
+-		description = "The actions of your team on this day were widely condemned by the media and authorities. With the civilian deaths the enemy gained a powerful propaganda tool and the ranks of their army grew. Progress towards a peaceful solution became harder and the conflict was prolonged further than anyone expected. The families who lost loved ones would spend years struggling to be acknowledged.";
+-		pictureBackground = "images\recon_image_notext.jpg";
+-		picture = "";
+-		pictureColor[] = {0.5,0.4,0.4,1};
+-	};
+ };
+ 
+ class CfgFunctions
+--- a/src/sunday_system/endMission.sqf
++++ b/src/sunday_system/endMission.sqf
+@@ -29,40 +29,24 @@ diag_log format ["DRO: At end of mission
+ diag_log format ["DRO: At end of mission _failCount is %1", _failCount];
+ diag_log format ["DRO: At end of mission civDeathCounter is %1", civDeathCounter];
+ 
+-if (civDeathCounter > 1) then {
+-	if (civDeathCounter == 2) then {
+-		if (isMultiplayer) then {
+-			'DROEnd_FailCiv1' call BIS_fnc_endMissionServer;
+-		} else {
+-			'DROEnd_FailCiv1' call BIS_fnc_endMission;
+-		};
++if (_successCount == (count taskIDs)) then {
++	if (isMultiplayer) then {
++		'DROEnd_Full' call BIS_fnc_endMissionServer;
+ 	} else {
+-		if (isMultiplayer) then {
+-			'DROEnd_FailCiv2' call BIS_fnc_endMissionServer;
+-		} else {
+-			'DROEnd_FailCiv2' call BIS_fnc_endMission;
+-		};
++		'DROEnd_Full' call BIS_fnc_endMission;
+ 	};
+ } else {
+-	if (_successCount == (count taskIDs)) then {
++	if (_failCount == (count taskIDs)) then {
+ 		if (isMultiplayer) then {
+-			'DROEnd_Full' call BIS_fnc_endMissionServer;
++		'DROEnd_Fail' call BIS_fnc_endMissionServer;
+ 		} else {
+-			'DROEnd_Full' call BIS_fnc_endMission;
+-		};
+-	} else {
+-		if (_failCount == (count taskIDs)) then {
+-			if (isMultiplayer) then {
+-			'DROEnd_Fail' call BIS_fnc_endMissionServer;
+-			} else {
+-				'DROEnd_Fail' call BIS_fnc_endMission;
+-			};			
+-		} else {	
+-			if (isMultiplayer) then {
+-				'DROEnd_Partial' call BIS_fnc_endMissionServer;
+-			} else {
+-				'DROEnd_Partial' call BIS_fnc_endMission;
+-			};			
+-		};
+-	};	
+-};
+\ No newline at end of file
++			'DROEnd_Fail' call BIS_fnc_endMission;
++		};			
++	} else {	
++		if (isMultiplayer) then {
++			'DROEnd_Partial' call BIS_fnc_endMissionServer;
++		} else {
++			'DROEnd_Partial' call BIS_fnc_endMission;
++		};			
++	};
++};	
+--- a/src/sunday_system/fnc_lib/droFunctions.sqf
++++ b/src/sunday_system/fnc_lib/droFunctions.sqf
+@@ -14,75 +14,12 @@ dro_civDeathHandler = {
+ 			if (isServer) then {
+ 				if (isNil "civDeathCounter") then {
+ 					civDeathCounter = 1;
+-					publicVariable "civDeathCounter";			
+-					_text = format["%1 has been responsible for a civilian casualty. Command will not accept collateral damage, adjust your approach to ensure civilians are kept out of the line of fire.", name ((_this select 0) select 1)];
+-					//["Command", _text] spawn BIS_fnc_showSubtitle;
+-					//[] spawn sun_playSubtitleRadio;				
+-					dro_messageStack pushBack [[["Command", _text, 0]], true];
+ 				} else {
+ 					civDeathCounter = civDeathCounter + 1;
+-					publicVariable "civDeathCounter";			
+-					switch (civDeathCounter) do {
+-						case 0: {};
+-						case 1: {
+-							[_this] spawn {
+-								sleep 2;							
+-								_text = format["%1 has caused a civilian casualty. Command will not accept collateral damage, adjust your approach to ensure civilians are kept out of the line of fire.", name ((_this select 0) select 1)];
+-								//["Command", _text] spawn BIS_fnc_showSubtitle;
+-								//[] spawn sun_playSubtitleRadio;
+-								dro_messageStack pushBack [[["Command", _text, 0]], true];
+-							};
+-						};
+-						case 2: {
+-							[_this] spawn {
+-								sleep 2;
+-								_text = format["%1 has caused a civilian casualty. This is your second warning! If you cannot complete your objectives without causing collateral damage you must withdraw.", name ((_this select 0) select 1)];
+-								//["Command", _text] spawn BIS_fnc_showSubtitle;
+-								//[] spawn sun_playSubtitleRadio;
+-								dro_messageStack pushBack [[["Command", _text, 0]], true];
+-							};
+-						};
+-						case 3: {
+-							[_this] spawn {
+-								sleep 2;
+-								_text = format["Your team are responsible for excessive civilian casualties! Pull out immediately, the mission is over!", name ((_this select 0) select 1)];
+-								//["Command", _text] spawn BIS_fnc_showSubtitle;
+-								//[] spawn sun_playSubtitleRadio;
+-								dro_messageStack pushBack [[["Command", _text, 0]], true];
+-								//if (player == leader group player) then {
+-									{
+-										[_x, 'FAILED', true] spawn BIS_fnc_taskSetState;
+-									} forEach taskIDs;
+-								//};
+-							};
+-						};
+-						case 4: {
+-							[_this] spawn {
+-								sleep 2;
+-								//[] execVM "sunday_system\endMission.sqf";
+-								
+-								[["", "BLACK OUT", 5]] remoteExec ["cutText", 0];
+-								[5, 0] remoteExec ["fadeSound", 0];
+-								[5, 0] remoteExec ["fadeSpeech", 0];
+-								sleep 5;
+-								if (isMultiplayer) then {
+-									'DROEnd_FailCiv2' call BIS_fnc_endMissionServer;
+-								} else {
+-									'DROEnd_FailCiv2' call BIS_fnc_endMission;
+-								};
+-								
+-							};
+-						};
+-						default {
+-							[_this] spawn {
+-								_text = format["%1 has caused a civilian casualty. Command will not accept collateral damage, adjust your approach to ensure civilians are kept out of the line of fire.", name ((_this select 0) select 1)];
+-								//["Command", _text] spawn BIS_fnc_showSubtitle;
+-								//[] spawn sun_playSubtitleRadio;
+-								dro_messageStack pushBack [[["Command", _text, 0]], true];
+-							};
+-						};
+-					};
+ 				};
++				publicVariable "civDeathCounter";
++				_text = format["%1 has been responsible for a civilian casualty. Command will not accept collateral damage, adjust your approach to ensure civilians are kept out of the line of fire.", name ((_this select 0) select 1)];
++				dro_messageStack pushBack [[["Command", _text, 0]], true];
+ 			};
+ 		};
+ 	}]; 
+@@ -656,4 +593,4 @@ dro_detectPosMP = {
+ 			};
+ 		};
+ 	};
+-};
+\ No newline at end of file
++};
